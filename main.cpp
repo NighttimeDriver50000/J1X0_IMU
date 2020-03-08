@@ -31,8 +31,14 @@ int main(int argc, char *argv[])
   struct int_param_s int_param;
 
   inv_mpu_spi_wrapper_init();
-  mpu_init(&int_param);
-  mpu_set_sensors(INV_XYZ_ACCEL);
+  if (mpu_init(&int_param) != 0) {
+    cerr << "ERROR: Failed to initialize MPU connection." << endl;
+    return 1;
+  }
+  if (mpu_set_sensors(INV_XYZ_ACCEL) != 0) {
+    cerr << "ERROR: Failed to enable accelerometer." << endl;
+    return 1;
+  }
 
   while (received_sigterm == 0)
   {
@@ -41,9 +47,11 @@ int main(int argc, char *argv[])
 
     // Read the raw accelerometer.
     short accelerometer[3];
-    int ret = mpu_get_accel_reg(accelerometer, NULL);
+    if (mpu_get_accel_reg(accelerometer, NULL) != 0) {
+      cerr << "WARN: Failed to read acceleration." << endl;
+    }
 
-    cout << ret << "\t" << accelerometer[0] << "\t" << accelerometer[1] << "\t"
+    cout << accelerometer[0] << "\t" << accelerometer[1] << "\t"
       << accelerometer[2] << endl;
   }
 

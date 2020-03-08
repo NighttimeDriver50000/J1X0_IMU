@@ -83,7 +83,7 @@ int SPI::Transfer(size_t rx_length, size_t tx_length)
   if (exchange_length > tx_length)
     for (size_t i = tx_length; i < exchange_length; i++) tx_buffer_[i] = 0xFF;
 
-  struct spi_ioc_transfer tr;
+  struct spi_ioc_transfer tr = {0};
   tr.tx_buf = (unsigned long)tx_buffer_;
   tr.rx_buf = (unsigned long)rx_buffer_;
   tr.len = exchange_length;
